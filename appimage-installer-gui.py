@@ -2,28 +2,50 @@
 import os
 import shutil
 import stat
+import subprocess
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import messagebox, ttk
 
 def browse_appimage():
-    path = filedialog.askopenfilename(
-        title="Select AppImage",
-        filetypes=[("AppImage Files", "*.AppImage *.appimage"), ("All Files", "*.*")]
-    )
-    if path:
-        source_var.set(path)
-        if not name_var.get():
-            base_name = os.path.basename(path)
-            name_without_ext = os.path.splitext(base_name)[0]
-            name_var.set(name_without_ext)
+    try:
+        # Call the native Zenity file picker
+        result = subprocess.run(
+            [
+                "zenity", "--file-selection",
+                "--title=Select AppImage",
+                "--file-filter=AppImage files | *.AppImage *.appimage",
+                "--file-filter=All files | *"
+            ],
+            capture_output=True, text=True, check=True
+        )
+        path = result.stdout.strip()
+        if path:
+            source_var.set(path)
+            # Auto-fill name if empty
+            if not name_var.get():
+                base_name = os.path.basename(path)
+                name_without_ext = os.path.splitext(base_name)[0]
+                name_var.set(name_without_ext)
+    except subprocess.CalledProcessError:
+        pass # Triggers if the user clicks "Cancel"
 
 def browse_icon():
-    path = filedialog.askopenfilename(
-        title="Select Icon (Optional)",
-        filetypes=[("Image Files", "*.png *.svg *.xpm"), ("All Files", "*.*")]
-    )
-    if path:
-        icon_var.set(path)
+    try:
+        result = subprocess.run(
+            [
+                "zenity", "--file-selection",
+                "--title=Select Icon (Optional)",
+                "--filename=/usr/share/icons/",
+                "--file-filter=Image files | *.png *.svg *.xpm",
+                "--file-filter=All files | *"
+            ],
+            capture_output=True, text=True, check=True
+        )
+        path = result.stdout.strip()
+        if path:
+            icon_var.set(path)
+    except subprocess.CalledProcessError:
+        pass
 
 def install_appimage():
     source_path = source_var.get()
