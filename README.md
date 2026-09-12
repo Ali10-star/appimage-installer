@@ -42,3 +42,16 @@ You can now launch the app directly from your system!
 7. Click the green **"Install AppImage"** button.
 
 The app will now be fully integrated into your system!
+
+---
+
+## 🗑️ Step 4: How to Uninstall
+
+If you ever wish to remove this installer tool from your system, simply open your terminal and run the following commands to delete its script and menu shortcut:
+
+```bash
+# 1. Remove the Python script
+rm ~/.scripts/appimage-installer-gui.py
+
+# 2. Remove the start menu shortcut
+rm ~/.local/share/applications/appimage-installer.desktop
